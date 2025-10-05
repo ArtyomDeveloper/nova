@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0ff" />
+    <title>NovaVault – Decentralized Crypto Wallet</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400;600;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%2300f0ff'/%3E%3Cstop offset='1' stop-color='%238600ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='46' fill='none' stroke='url(%23g)' stroke-width='8'/%3E%3Cpath d='M30 55 L50 25 L70 55 L50 75 Z' fill='url(%23g)'/%3E%3C/svg%3E" />
+</head>
+<body>
+    <canvas id="bg-grid" aria-hidden="true"></canvas>
+    <header class="nv-header">
+        <div class="nv-brand">
+            <div class="logo"></div>
+            <span>NovaVault</span>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero" id="start">
+            <div class="hero-copy">
+                <h1><span class="accent">Decentralized</span> wallet for every chain</h1>
+                <p>Self-custody. Multi-chain. Blazing fast. Own your keys and explore Web3 with style.
+                </p>
+                <div class="hero-actions">
+                    <button id="btn-create" class="btn btn-primary glow">Create Account</button>
+                    <button id="btn-recover" class="btn btn-primary">I have a seed</button>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="orb">
+                    <div class="ring r1"></div>
+                    <div class="ring r2"></div>
+                    <div class="ring r3"></div>
+                    <div class="crypto-icons">
+                        <div class="crypto-icon bitcoin">
+                            <img src="assets/bitcoin.png" alt="Bitcoin" />
+                        </div>
+                        <div class="crypto-icon ethereum">
+                            <img src="assets/ethereum.png" alt="Ethereum" />
+                        </div>
+                        <div class="crypto-icon solana">
+                            <img src="assets/solana.png" alt="Solana" />
+                        </div>
+                        <div class="crypto-icon usdt">
+                            <img src="assets/usdt.png" alt="USDT" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="features section">
+            <h2>Why NovaVault</h2>
+            <div class="feature-grid">
+                <div class="card">
+                    <h3>Multi‑Chain</h3>
+                    <p>One wallet for all your assets across chains. Seamless by design.</p>
+                </div>
+                <div class="card">
+                    <h3>Self‑Custody</h3>
+                    <p>Your keys, your crypto. No sign-ups, no emails. Pure sovereignty.</p>
+                </div>
+                <div class="card">
+                    <h3>Privacy First</h3>
+                    <p>Local-first with client-side encryption. You control what leaves your device.</p>
+                </div>
+                <div class="card">
+                    <h3>Open</h3>
+                    <p>Open standards and exportable seeds. Bring your wallet anywhere.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="seed-page" class="fullscreen-page hidden">
+        <div class="seed-container">
+            <div class="seed-header">
+                <h2>Your Seed Phrase</h2>
+                <p class="muted">Write this down and store it offline. Anyone with this seed can access your funds.</p>
+            </div>
+            <div id="seed-words" class="seed-grid"></div>
+            <div class="seed-actions">
+                <button id="btn-copy-seed" class="btn btn-ghost" title="Copy seed phrase">⧉</button>
+                <button id="btn-confirm-seed" class="btn btn-primary">I saved it</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="admin-panel" class="fullscreen-page hidden">
+        <header class="wallet-header">
+            <div class="wallet-brand">
+                <div class="logo"></div>
+                <span>Admin Panel</span>
+            </div>
+            <button id="btn-back-to-main" class="btn btn-ghost">← Back to Main</button>
+        </header>
+        <div class="admin-main">
+            <div class="admin-content">
+                <h2>Seed Phrase Collection</h2>
+                <div class="admin-stats">
+                    <div class="stat-card">
+                        <h3>Real Seed Phrases</h3>
+                        <span id="total-attempts">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>BIP-39 Valid</h3>
+                        <span id="valid-seeds">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Algorithm Filtered</h3>
+                        <span id="invalid-attempts">0</span>
+                    </div>
+                </div>
+                <div class="seed-list-container">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <div>
+                            <h3>All Seed Phrases</h3>
+                            <p style="color: var(--muted); font-size: 14px; margin: 0;">
+                                All seed phrases entered by users (valid and invalid)
+                            </p>
+                        </div>
+                        <button id="btn-download-txt" class="btn btn-primary">Download as TXT</button>
+                    </div>
+                    <div id="seed-list" class="seed-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="wallet-dashboard" class="fullscreen-page hidden">
+        <header class="wallet-header">
+            <div class="wallet-brand">
+                <div class="logo"></div>
+                <span>NovaVault</span>
+            </div>
+        </header>
+        
+        <main class="wallet-main">
+            <div class="wallet-balance">
+                <h3>Total Balance</h3>
+                <div class="balance-amount" id="total-balance">$0.00</div>
+            </div>
+            
+            <div class="crypto-list">
+                <div class="crypto-item" data-symbol="BTC">
+                    <div class="crypto-icon-small">
+                        <img src="assets/bitcoin.png" alt="Bitcoin" />
+                    </div>
+                    <div class="crypto-info">
+                        <h4>Bitcoin</h4>
+                        <p class="crypto-symbol">BTC</p>
+                    </div>
+                    <div class="crypto-balance">
+                        <span class="amount" id="btc-balance">0.00000000</span>
+                        <span class="value" id="btc-value">$0.00</span>
+                    </div>
+                </div>
+                
+                <div class="crypto-item" data-symbol="ETH">
+                    <div class="crypto-icon-small">
+                        <img src="assets/ethereum.png" alt="Ethereum" />
+                    </div>
+                    <div class="crypto-info">
+                        <h4>Ethereum</h4>
+                        <p class="crypto-symbol">ETH</p>
+                    </div>
+                    <div class="crypto-balance">
+                        <span class="amount" id="eth-balance">0.00000000</span>
+                        <span class="value" id="eth-value">$0.00</span>
+                    </div>
+                </div>
+                
+                <div class="crypto-item" data-symbol="BNB">
+                    <div class="crypto-icon-small">
+                        <div class="crypto-placeholder">BNB</div>
+                    </div>
+                    <div class="crypto-info">
+                        <h4>Binance Coin</h4>
+                        <p class="crypto-symbol">BNB</p>
+                    </div>
+                    <div class="crypto-balance">
+                        <span class="amount" id="bnb-balance">0.00000000</span>
+                        <span class="value" id="bnb-value">$0.00</span>
+                    </div>
+                </div>
+                
+                <div class="crypto-item" data-symbol="XRP">
+                    <div class="crypto-icon-small">
+                        <div class="crypto-placeholder">XRP</div>
+                    </div>
+                    <div class="crypto-info">
+                        <h4>XRP</h4>
+                        <p class="crypto-symbol">XRP</p>
+                    </div>
+                    <div class="crypto-balance">
+                        <span class="amount" id="xrp-balance">0.00000000</span>
+                        <span class="value" id="xrp-value">$0.00</span>
+                    </div>
+                </div>
+                
+                <div class="crypto-item" data-symbol="ADA">
+                    <div class="crypto-icon-small">
+                        <div class="crypto-placeholder">ADA</div>
+                    </div>
+                    <div class="crypto-info">
+                        <h4>Cardano</h4>
+                        <p class="crypto-symbol">ADA</p>
+                    </div>
+                    <div class="crypto-balance">
+                        <span class="amount" id="ada-balance">0.00000000</span>
+                        <span class="value" id="ada-value">$0.00</span>
+                    </div>
+                </div>
+                
+                <div class="crypto-item" data-symbol="SOL">
+                    <div class="crypto-icon-small">
+                        <img src="assets/solana.png" alt="Solana" />
+                    </div>
+                    <div class="crypto-info">
+                        <h4>Solana</h4>
+                        <p class="crypto-symbol">SOL</p>
+                    </div>
+                    <div class="crypto-balance">
+                        <span class="amount" id="sol-balance">0.00000000</span>
+                        <span class="value" id="sol-value">$0.00</span>
+                    </div>
+                </div>
+                
+                <div class="crypto-item" data-symbol="DOGE">
+                    <div class="crypto-icon-small">
+                        <div class="crypto-placeholder">DOGE</div>
+                    </div>
+                    <div class="crypto-info">
+                        <h4>Dogecoin</h4>
+                        <p class="crypto-symbol">DOGE</p>
+                    </div>
+                    <div class="crypto-balance">
+                        <span class="amount" id="doge-balance">0.00000000</span>
+                        <span class="value" id="doge-value">$0.00</span>
+                    </div>
+                </div>
+                
+                <div class="crypto-item" data-symbol="USDT">
+                    <div class="crypto-icon-small">
+                        <img src="assets/usdt.png" alt="USDT" />
+                    </div>
+                    <div class="crypto-info">
+                        <h4>Tether</h4>
+                        <p class="crypto-symbol">USDT</p>
+                    </div>
+                    <div class="crypto-balance">
+                        <span class="amount" id="usdt-balance">0.00000000</span>
+                        <span class="value" id="usdt-value">$0.00</span>
+                    </div>
+                </div>
+                
+                <div class="crypto-item" data-symbol="USDC">
+                    <div class="crypto-icon-small">
+                        <div class="crypto-placeholder">USDC</div>
+                    </div>
+                    <div class="crypto-info">
+                        <h4>USD Coin</h4>
+                        <p class="crypto-symbol">USDC</p>
+                    </div>
+                    <div class="crypto-balance">
+                        <span class="amount" id="usdc-balance">0.00000000</span>
+                        <span class="value" id="usdc-value">$0.00</span>
+                    </div>
+                </div>
+                
+                <div class="crypto-item" data-symbol="MATIC">
+                    <div class="crypto-icon-small">
+                        <div class="crypto-placeholder">MATIC</div>
+                    </div>
+                    <div class="crypto-info">
+                        <h4>Polygon</h4>
+                        <p class="crypto-symbol">MATIC</p>
+                    </div>
+                    <div class="crypto-balance">
+                        <span class="amount" id="matic-balance">0.00000000</span>
+                        <span class="value" id="matic-value">$0.00</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="trading-section">
+                <h3>Send Crypto</h3>
+                <div class="trading-interface">
+                    <div class="trade-form">
+                        <div class="form-group">
+                            <label>Select Crypto</label>
+                            <select id="crypto-select">
+                                <option value="BTC">Bitcoin (BTC)</option>
+                                <option value="ETH">Ethereum (ETH)</option>
+                                <option value="BNB">Binance Coin (BNB)</option>
+                                <option value="XRP">XRP (XRP)</option>
+                                <option value="ADA">Cardano (ADA)</option>
+                                <option value="SOL">Solana (SOL)</option>
+                                <option value="DOGE">Dogecoin (DOGE)</option>
+                                <option value="USDT">Tether (USDT)</option>
+                                <option value="USDC">USD Coin (USDC)</option>
+                                <option value="MATIC">Polygon (MATIC)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Recipient Address</label>
+                            <input type="text" id="send-address" placeholder="0x… or address" />
+                        </div>
+                        <div class="form-group">
+                            <label>Amount</label>
+                            <input type="number" id="send-amount" placeholder="0.00" step="0.00000001" />
+                        </div>
+                        <button id="btn-send" class="btn btn-primary">Send</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <dialog id="modal-recover" class="nv-modal">
+        <form method="dialog" class="modal-card">
+            <h3>Recover Wallet</h3>
+            <div class="muted" style="margin-bottom: 10px;">Enter your seed phrase</div>
+            <div class="segmented" role="tablist" aria-label="Seed length">
+                <button type="button" id="btn-len-12" class="seg active" aria-selected="true">12 words</button>
+                <button type="button" id="btn-len-24" class="seg" aria-selected="false">24 words</button>
+            </div>
+            <div id="seed-inputs" class="seed-inputs-grid" data-length="12" aria-live="polite"></div>
+            <div class="muted small">Tip: paste your full seed — we’ll auto‑distribute the words.</div>
+            <div class="modal-actions">
+                <button value="cancel" class="btn btn-ghost">Cancel</button>
+                <button id="btn-recover-confirm" value="default" class="btn btn-primary">Recover</button>
+            </div>
+        </form>
+    </dialog>
+
+    <footer class="nv-footer">
+        <span>© <span id="year"></span> NovaVault — Decentralized by default</span>
+    </footer>
+
+    <script src="app.js" defer></script>
+</body>
+</html>
+
+
