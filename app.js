@@ -474,6 +474,8 @@
       pulseOrb();
       buildSeedInputs(12);
       document.getElementById('modal-recover').showModal();
+      // Ensure inputs are built after modal opens
+      setTimeout(() => buildSeedInputs(12), 100);
     });
     $('#btn-recover-confirm').addEventListener('click', async (e) => {
       e.preventDefault();
